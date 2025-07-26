@@ -1,0 +1,29 @@
+[global]
+workgroup = WORKGROUP
+server string = InnovaSys File Server
+security = user
+map to guest = bad user
+
+[homes]
+comment = Home Directories
+browseable = no
+read only = yes
+create mask = 0700
+
+[printers]
+comment = All Printers
+browseable = yes
+path = /var/spool/samba
+printable = yes
+guest ok = no
+read only = no
+create mask = 0700
+
+[Proyectos]
+comment = Repositorio de Proyectos de Desarrollo
+path = {{ directorio_compartido }}
+valid users = @desarrolladores
+force group = desarrolladores
+create mask = 0660
+directory mask = 0770
+read only = no

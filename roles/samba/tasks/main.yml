@@ -1,0 +1,56 @@
+- name: Crear el grupo desarrolladores
+  group:
+    name: desarrolladores
+    state: present
+
+- name: Crear el usuario devuser1
+  user:
+    name: devuser1
+    shell: /bin/false
+    groups: desarrolladores
+    state: present
+
+- name: Agregar usuario devuser1 a Samba y establecer contraseña
+  shell: |
+    # Verificar si el usuario ya existe en Samba
+    if ! pdbedit -L | grep -q "^{{ usuario_samba }}:"; then
+      # Si no existe, agregarlo con smbpasswd -a
+      printf '%s\n%s\n' '{{ contraseña_samba }}' '{{ contraseña_samba }}' | smbpasswd -a -s {{ usuario_samba }}
+    else
+      # Si ya existe, solo cambiar la contraseña
+      printf '%s\n%s\n' '{{ contraseña_samba }}' '{{ contraseña_samba }}' | smbpasswd -s {{ usuario_samba }}
+    fi
+  become: true
+  # Considerar notificar el handler solo si realmente se hizo un cambio.
+  # Por simplicidad, lo omitimos aquí, asumiendo que el reinicio ocurre si smb.conf cambia.
+
+- name: Instalar Samba
+  apt:
+    name: samba
+    state: present
+  become: true
+
+- name: Crear el directorio compartido
+  file:
+    path: "{{ directorio_compartido }}"
+    state: directory
+    owner: root
+    group: desarrolladores
+    mode: '0770'
+  become: true
+
+- name: Configurar Samba para el recurso compartido
+  template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reiniciar Samba
+
+- name: Asegurar que el servicio Samba esté activo y habilitado
+  service:
+    name: smbd
+    state: started
+    enabled: true
+  become: true

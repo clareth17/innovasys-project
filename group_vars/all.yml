@@ -1,0 +1,7 @@
+---
+# Variables generales para el proyecto
+nombre_empresa: "InnovaSys"
+grupo_desarrolladores: "desarrolladores"
+usuario_samba: "devuser1"
+contraseña_samba: "Innova.2025"
+directorio_compartido: "/srv/samba/proyectos"

@@ -1,0 +1,29 @@
+---
+- name: Instalar Apache
+  apt:
+    name: apache2
+    state: present
+  become: true
+
+- name: Reiniciar Apache después de cambios
+  service:
+    name: apache2
+    state: restarted
+  become: true
+  notify: Reiniciar Apache
+
+- name: Copiar la plantilla index.html
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  notify: Reiniciar Apache
+
+- name: Asegurar que el servicio Apache esté activo y habilitado
+  service:
+    name: apache2
+    state: started
+    enabled: true
+  become: true

@@ -1,0 +1,2 @@
+[servers]
+servidor-innovasys ansible_host=192.168.0.12 ansible_user=operador ansible_become_pass=Passw0rd
